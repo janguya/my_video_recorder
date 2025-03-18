@@ -51,6 +51,17 @@ while True:
                 out.release()
                 out = None
 
+    # ↑ 키 프레임 증가
+    elif key == 82:
+        if (fps + 5) <= 30:
+            fps += 5
+        cap.set(cv.CAP_PROP_POS_FRAMES, fps)
+    # ↓ 키 프레임 감소
+    elif key == 84:
+        if (fps - 5) >= 5:
+            fps -= 5
+        cap.set(cv.CAP_PROP_POS_FRAMES, fps)
+
     # 녹화 중이면 저장
     if recording and out:
         out.write(frame)
