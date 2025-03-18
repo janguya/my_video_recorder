@@ -2,6 +2,7 @@ import cv2 as cv
 import time
 
 # 웹캠 열기 (기본 카메라: 0)
+# mac 에서 0 으로 하니까 아이폰으로 연결됨
 cap = cv.VideoCapture(0)
 
 if not cap.isOpened():
@@ -9,9 +10,12 @@ if not cap.isOpened():
     exit()
 
 # 웹캠의 실제 FPS 가져오기
-fps = cap.get(cv.CAP_PROP_FPS)
-if fps == 0 or fps > 30.0:
-    fps = 30.0  # 기본값 설정
+BASE_FPS = cap.get(cv.CAP_PROP_FPS)
+print(f"BASE_FPS: {BASE_FPS}")
+if BASE_FPS == 0 or BASE_FPS > 30.0:
+    BASE_FPS = 30.0  # 기본값 설정
+
+fps = BASE_FPS
 
 print(f"📷 웹캠 FPS: {fps}")
 
@@ -23,12 +27,30 @@ while True:
 
     ret, frame = cap.read()
     if not ret:
-        print("❌ 프레임을 읽을 수 없습니다.")
-        break
+        # 카메라가 준비될 때까지 기다리는 로직 추가
+        MAX_RETRIES = 30  # 최대 30번 (약 3초 대기)
+        retry_count = 0
+
+        while retry_count < MAX_RETRIES:
+            ret, frame = cap.read()
+            if ret:
+                break
+            print(f"⏳ 카메라 준비 중... ({retry_count + 1}/{MAX_RETRIES})")
+            time.sleep(0.1)  # 0.1초 대기
+            retry_count += 1
+            print("❌ 프레임을 읽을 수 없습니다.")
+            break
+
+    # FPS 값을 오른쪽 하단에 추가
+    height, width, _ = frame.shape
+    fps_text = f"FPS: {int(fps)}"
 
     # 녹화 중이면 화면에 빨간 원(🔴) 추가
     if recording:
         cv.circle(frame, (50, 50), 10, (0, 0, 255), -1)
+    # fps 표기는 녹화 중 아닐때만
+    else :
+        cv.putText(frame, fps_text, (width - 120, height - 10), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
 
     cv.imshow('Video Recorder', frame)
 
@@ -50,21 +72,23 @@ while True:
             if out:
                 out.release()
                 out = None
-
-    # ↑ 키 프레임 증가
-    elif key == 82:
-        if (fps + 5) <= 30:
-            fps += 5
-        cap.set(cv.CAP_PROP_POS_FRAMES, fps)
-    # ↓ 키 프레임 감소
-    elif key == 84:
-        if (fps - 5) >= 5:
-            fps -= 5
-        cap.set(cv.CAP_PROP_POS_FRAMES, fps)
-
     # 녹화 중이면 저장
     if recording and out:
         out.write(frame)
+
+    if not recording:
+        # ↑ 키 프레임 증가
+        if key == 0:
+            if (fps + 5) <= 30:
+                fps += 5
+                print("🔼 FPS 증가:", fps)
+                cap.set(cv.CAP_PROP_POS_FRAMES, fps)
+         # ↓ 키 프레임 감소
+        elif key == 1:
+            if (fps - 5) >= 5:
+                fps -= 5
+                print("🔽 FPS 감소:", fps)
+                cap.set(cv.CAP_PROP_POS_FRAMES, fps)
 
     # 프레임 속도 조정 (실제 FPS에 맞추기)
     elapsed_time = time.time() - start_time
