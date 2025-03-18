@@ -2,7 +2,6 @@ import cv2 as cv
 import time
 
 # 웹캠 열기 (기본 카메라: 0)
-# mac 에서 0 으로 하니까 아이폰으로 연결됨
 cap = cv.VideoCapture(0)
 
 if not cap.isOpened():
@@ -12,7 +11,7 @@ if not cap.isOpened():
 # 웹캠의 실제 FPS 가져오기
 BASE_FPS = cap.get(cv.CAP_PROP_FPS)
 print(f"BASE_FPS: {BASE_FPS}")
-if BASE_FPS == 0 or BASE_FPS > 30.0:
+if BASE_FPS < 5 or BASE_FPS > 30.0:
     BASE_FPS = 30.0  # 기본값 설정
 
 fps = BASE_FPS
@@ -51,8 +50,8 @@ while True:
 
     # 녹화 중이면 화면에 빨간 원(🔴) 추가
     if recording:
-        cv.circle(frame, (50, 50), 10, (0, 0, 255), -1)
-    cv.putText(frame, fps_text, (width - 120, height - 10), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
+        cv.circle(display_frame, (50, 50), 10, (0, 0, 255), -1)
+    cv.putText(display_frame, fps_text, (width - 120, height - 10), cv.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 255), 1)
 
     cv.imshow('Video Recorder', display_frame)
 
@@ -80,13 +79,13 @@ while True:
 
     if not recording:
         # ↑ 키 프레임 증가
-        if key == '+' or '=':
+        if key == ord('+') or key == ord('='):
             if (fps + 5) <= 30:
                 fps += 5
                 print("🔼 FPS 증가:", fps)
                 cap.set(cv.CAP_PROP_POS_FRAMES, fps)
          # ↓ 키 프레임 감소
-        elif key == '-' or '_':
+        elif key == ord('-') or key == ord('_'):
             if (fps - 5) >= 5:
                 fps -= 5
                 print("🔽 FPS 감소:", fps)

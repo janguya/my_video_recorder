@@ -6,12 +6,12 @@ Python을 사용하여 웹캠 영상을 실시간으로 녹화할 수 있는 프
 
 ## 🖥️ 사용법  
 
-| 키 | 기능 |
-|----|------|
-| `Space` | 녹화 시작/정지 |
-| `ESC` | 프로그램 종료 |
-| `↑` | FPS 증가 (+5) |
-| `↓` | FPS 감소 (-5) |
+| 키        | 기능 |
+|----------|------|
+| `Space`  | 녹화 시작/정지 |
+| `ESC`    | 프로그램 종료 |
+| `+ or =` | FPS 증가 (+5) |
+| `- or _` | FPS 감소 (-5) |
 
 ---
 
@@ -20,14 +20,9 @@ Python을 사용하여 웹캠 영상을 실시간으로 녹화할 수 있는 프
 ### ▶ 실행 화면 (GIF)  
 ![my_video_recorder_example.gif](my_video_recorder_example.gif)  
 
-GIF 파일을 생성하려면, 녹화된 `output.avi`를 `GIF`로 변환하면 됩니다.  
-
-### 🔄 AVI → GIF 변환 방법  
-**FFmpeg 사용**  
-```bash
-ffmpeg -i output.avi -vf "fps=10,scale=640:-1:flags=lanczos" video_recorder.gif
+mac 에 연결되어있는 아이폰이 있으면 기본 카메라 0 이 아이폰으로 설정되어 아이폰으로 촬영한 예시.  
+mac 화면에는 빨간점이 표시되지만 제일 상단의 화면을 잘 보면 실제로는 녹화되지 않음.  
+아이폰이 연결되어 있는 상태에서 mac 내장캠을 사용하고 싶다면
+```python
+cap = cv2.VideoCapture(1)
 ```
-- `fps=10` → 10프레임으로 GIF 변환  
-- `scale=640:-1` → 가로 640px로 리사이징  
-
----
