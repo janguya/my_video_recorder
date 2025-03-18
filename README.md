@@ -1,6 +1,6 @@
 # 🎥 OpenCV Video Recorder  
 
-Python을 사용하여 웹캠 영상을 실시간으로 녹화할 수 있는 프로그램입니다.  
+Python을 사용하여 웹캠 영상을 실시간으로 녹화할 수 있는 간단한 프로그램입니다.  
 
 ---
 
@@ -20,9 +20,23 @@ Python을 사용하여 웹캠 영상을 실시간으로 녹화할 수 있는 프
 ### ▶ 실행 화면 (GIF)  
 ![my_video_recorder_example.gif](my_video_recorder_example.gif)  
 
-mac 에 연결되어있는 아이폰이 있으면 기본 카메라 0 이 아이폰으로 설정되어 아이폰으로 촬영한 예시.  
+mac 에 연결되어있는 아이폰이 있으면 기본 카메라 0 이 아이폰으로 설정되어 아이폰으로 촬영한 녹화 예시.  
 mac 화면에는 빨간점이 표시되지만 제일 상단의 화면을 잘 보면 실제로는 녹화되지 않음.  
 아이폰이 연결되어 있는 상태에서 mac 내장캠을 사용하고 싶다면
 ```python
 cap = cv2.VideoCapture(1)
 ```
+
+---
+
+### 🔄 AVI → GIF 변환 방법
+예시를 첨부할 때 유용  
+
+**FFmpeg 사용**  
+```bash
+ffmpeg -i output.avi -vf "fps=10,scale=640:-1:flags=lanczos" my_video_recorder_example.gif
+```
+- `fps=10` → 10프레임으로 GIF 변환  
+- `scale=640:-1` → 가로 640px로 리사이징  
+
+---
